@@ -48,10 +48,20 @@ class InputManager {
         // Start Button (usually button 9 on Xbox controller)
         const isStartPressed = gp.buttons[9] && gp.buttons[9].pressed;
         if (isStartPressed && !this.wasStartPressed) {
-            // Trigger Reset wave / Start
-            player.game.debuggerr.processDebugKeys("r");
+            if (player.lives <= 0) {
+                player.game.restartGame();
+            } else {
+                player.game.debuggerr.processDebugKeys("r");
+            }
         }
         this.wasStartPressed = isStartPressed;
+
+        // Select / Back Button (usually button 8 on Xbox controller)
+        const isSelectPressed = gp.buttons[8] && gp.buttons[8].pressed;
+        if (isSelectPressed && !this.wasSelectPressed) {
+            player.game.restartGame();
+        }
+        this.wasSelectPressed = isSelectPressed;
     }
 
     isKeyPressed(key) {

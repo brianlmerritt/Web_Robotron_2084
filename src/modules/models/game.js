@@ -79,8 +79,18 @@ class Game {
 
     advanceWave() {
         this.currentWave++;
+        this.actorMngr.actors.player.lives++;
         this.score.resetRescueBonus();
         this.debuggerr.resetWave(true); 
+    }
+
+    restartGame() {
+        this.currentWave = 1;
+        this.score.currentScore = 0;
+        this.score.rescueBonus = 0;
+        this.score.nextExtraLife = 25000;
+        this.actorMngr.actors.player.lives = 3;
+        this.debuggerr.resetWave(true);
     }
 
     draw() {
