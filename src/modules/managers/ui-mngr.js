@@ -1,14 +1,20 @@
 export { UIManager };
 
 class UIManager {
-    update(score, ui, actorMngr) {
+    update(score, ui, actorMngr, game) {
         this.updateScoreElement(ui, score.currentScore);
         this.updateLivesElement(ui, actorMngr);
+        this.updateWaveElement(ui, game.currentWave);
     }
 
     clearPreviousFrameSprites(ui) {
         const { context, canvas } = ui;
         context.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    updateWaveElement(ui, currentWave) {
+        if (!ui.waveElement) return;
+        ui.waveElement.innerHTML = `WAVE ${currentWave.toString().padStart(3, "0")}`;
     }
 
     // Creates a string indicating the amount of lives beyond 20

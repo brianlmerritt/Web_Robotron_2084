@@ -12,6 +12,7 @@ class UserInterface {
         this.lifeIndicator = document.getElementsByClassName("life-indicator");
         this.lifeIndicatorSprite = game.spriteMngr.setSprite("life");
         this.FPSElement = document.getElementById("fps-counter");
+        this.waveElement = document.getElementById("wave");
     }
 
     // Initializes canvas.width and height with scaled dimensions

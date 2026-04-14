@@ -50,7 +50,12 @@ class Debugger {
         console.log("UPDATING ACTORS: " + this.shouldUpdateActors);
     }
 
-    resetWave() {
+    resetWave(isStartOfNewWave = false) {
+        if (!isStartOfNewWave) {
+            // Keep the wave the same if it's just a player restart/debug restart
+            // Otherwise currentWave is already incremented by game.advanceWave
+        }
+        
         const { projectiles } = this.game.projectileMngr;
         const { enemies, humans, player } = this.game.actorMngr.actors;
         enemies.clear();
@@ -62,6 +67,9 @@ class Debugger {
         player.screenY = this.game.ui.canvas.height / 2 - player.originalHeight;
         player.spritesheetX = 0;
         player.spritesheetY = 0;
+        
+        // Let game tick for a moment safely
+        this.game.globalTimer = 0;
         this.game.spawnActors();
     }
 

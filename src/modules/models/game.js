@@ -19,6 +19,7 @@ import { Daddy } from "../actors/humans/daddy.js";
 import { Mikey } from "../actors/humans/mikey.js";
 import { Spheroid } from "../actors/enemies/spheroid.js";
 import { Quark } from "../actors/enemies/quark.js";
+import { getWaveConfig } from "../helpers/waves.js";
 
 // Updates and draws all game elements. Instantiated in main.js
 class Game {
@@ -36,6 +37,7 @@ class Game {
         this.collisionMngr = new CollisionManager();
         this.stateMngr = new StateManager(this);
         this.debuggerr = new Debugger(this);
+        this.currentWave = 1;
     }
 
     update() {
@@ -50,8 +52,35 @@ class Game {
             this.collisionMngr.update(this);
             score.update(player, soundMngr);
             stateMngr.update();
-            this.uiMngr.update(score, ui, actorMngr);
+            this.uiMngr.update(score, ui, actorMngr, this);
+            this.checkWaveCompletion();
         }
+    }
+
+    checkWaveCompletion() {
+        const enemies = this.actorMngr.actors.enemies;
+        let hasVulnerableEnemies = false;
+
+        // Hulks are indestructible
+        for (const enemy of enemies) {
+            if (enemy.constructor.name !== "Hulk") {
+                hasVulnerableEnemies = true;
+                break;
+            }
+        }
+
+        if (!hasVulnerableEnemies && enemies.size > 0 && this.globalTimer > 60) {
+            // Need the globalTimer check so it doesn't instantly trigger on frame 1
+            this.advanceWave();
+        } else if (enemies.size === 0 && this.globalTimer > 60) {
+            this.advanceWave();
+        }
+    }
+
+    advanceWave() {
+        this.currentWave++;
+        this.score.resetRescueBonus();
+        this.debuggerr.resetWave(true); 
     }
 
     draw() {
@@ -61,16 +90,18 @@ class Game {
         projectileMngr.draw(this, ui.context);
     }
 
-    // TEMPORARY. WAVE METHOD
-    // HUMANS -> OBSTACLES -> HULKS -> ELSE
     spawnActors() {
         const { actorMngr } = this;
-        actorMngr.addActors(7, Daddy);
-        actorMngr.addActors(7, Mommy);
-        actorMngr.addActors(6, Mikey);
-        actorMngr.addActors(15, Hulk);
-        actorMngr.addActors(5, Spheroid);
-        actorMngr.addActors(5, Quark);
-        actorMngr.addActors(75, Grunt);
+        const waveConfig = getWaveConfig(this.currentWave);
+
+        actorMngr.addActors(waveConfig.Daddy || 0, Daddy);
+        actorMngr.addActors(waveConfig.Mommy || 0, Mommy);
+        actorMngr.addActors(waveConfig.Mikey || 0, Mikey);
+        actorMngr.addActors(waveConfig.Hulk || 0, Hulk);
+        actorMngr.addActors(waveConfig.Spheroid || 0, Spheroid);
+        actorMngr.addActors(waveConfig.Quark || 0, Quark);
+        actorMngr.addActors(waveConfig.Grunt || 0, Grunt);
+        // Note: For actual spawn logic, we might need to include logic for Brain, Enforcers, Tanks, etc.
+        // based on configurations if they start scaling in later waves.
     }
 }
