@@ -8,12 +8,54 @@ class InputManager {
     }
 
     update(player) {
-        this.processMovementKeys(player);
-        this.processShootingKeys(player);
+        this.updateGamepadInput(player);
+        if (player.currentState === "alive") {
+            this.processMovementKeys(player);
+            this.processShootingKeys(player);
+        }
+    }
+
+    updateGamepadInput(player) {
+        const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+        const gp = gamepads[0];
+        
+        // Remove existing virtual joystick keys
+        this.input.keysPressed = this.input.keysPressed.filter(key => !key.startsWith("js_"));
+        
+        if (!gp) return;
+
+        const deadzone = 0.2;
+
+        // Left Joystick (Movement: W, S, A, D)
+        const leftX = gp.axes[0];
+        const leftY = gp.axes[1];
+
+        if (leftY < -deadzone) this.input.keysPressed.push("js_w");
+        if (leftY > deadzone) this.input.keysPressed.push("js_s");
+        if (leftX < -deadzone) this.input.keysPressed.push("js_a");
+        if (leftX > deadzone) this.input.keysPressed.push("js_d");
+
+        // Right Joystick (Shooting: Arrows)
+        // Some controllers use axes 2 & 3 for right stick
+        const rightX = gp.axes[2];
+        const rightY = gp.axes[3];
+
+        if (rightY < -deadzone) this.input.keysPressed.push("js_arrowup");
+        if (rightY > deadzone) this.input.keysPressed.push("js_arrowdown");
+        if (rightX < -deadzone) this.input.keysPressed.push("js_arrowleft");
+        if (rightX > deadzone) this.input.keysPressed.push("js_arrowright");
+
+        // Start Button (usually button 9 on Xbox controller)
+        const isStartPressed = gp.buttons[9] && gp.buttons[9].pressed;
+        if (isStartPressed && !this.wasStartPressed) {
+            // Trigger Reset wave / Start
+            player.game.debuggerr.processDebugKeys("r");
+        }
+        this.wasStartPressed = isStartPressed;
     }
 
     isKeyPressed(key) {
-        return this.input.keysPressed.includes(key);
+        return this.input.keysPressed.includes(key) || this.input.keysPressed.includes("js_" + key);
     }
 
     isPressingCombination(keys) {

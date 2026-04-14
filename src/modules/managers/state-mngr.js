@@ -26,6 +26,17 @@ class StateManager {
             this.score.resetRescueBonus();
             this.soundMngr.playSound("playerDestroyed");
             this.projectileMngr.eraseAllPlayerProjectiles();
+
+            if (this.player.lives > 0) {
+                setTimeout(() => {
+                    this.player.currentState = "alive";
+                    this.player.screenX = this.game.ui.canvas.width / 2 - this.player.originalWidth;
+                    this.player.screenY = this.game.ui.canvas.height / 2 - this.player.originalHeight;
+                    this.player.spritesheetX = 0;
+                    this.player.spritesheetY = 0;
+                    this.projectiles.enemies.clear();
+                }, 2000);
+            }
         }
     }
 

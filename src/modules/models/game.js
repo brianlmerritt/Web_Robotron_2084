@@ -41,9 +41,12 @@ class Game {
     update() {
         const { score, ui, soundMngr, actorMngr, stateMngr } = this;
         const player = actorMngr.actors.player;
+        
+        // Input should always be checked so the user can press Start
+        this.inputMngr.update(player);
+        
         if (!stateMngr.isDestroyed(player)) {
             actorMngr.update();
-            this.inputMngr.update(player);
             this.collisionMngr.update(this);
             score.update(player, soundMngr);
             stateMngr.update();
