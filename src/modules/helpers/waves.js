@@ -28,9 +28,9 @@ export const waves = [
     {
         // Wave 3
         Grunt: 20,
-        Hulk: 4,
-        Spheroid: 2,
-        Quark: 2,
+        Hulk: 6,
+        Spheroid: 1,
+        Quark: 1,
         Brain: 0,
         Enforcer: 0,
         Prog: 0,
@@ -40,12 +40,12 @@ export const waves = [
     },
     {
         // Wave 4
-        Grunt: 30,
-        Hulk: 5,
-        Spheroid: 3,
+        Grunt: 25,
+        Hulk: 6,
+        Spheroid: 2,
         Quark: 2,
-        Brain: 2,
-        Enforcer: 4,
+        Brain: 1,
+        Enforcer: 1,
         Prog: 0,
         Daddy: 4,
         Mommy: 4,
@@ -53,16 +53,55 @@ export const waves = [
     },
     {
         // Wave 5
-        Grunt: 40,
-        Hulk: 6,
-        Spheroid: 4,
+        Grunt: 30,
+        Hulk: 7,
+        Spheroid: 3,
         Quark: 3,
-        Brain: 4,
-        Enforcer: 6,
+        Brain: 2,
+        Enforcer: 2,
         Prog: 0,
         Daddy: 5,
         Mommy: 5,
         Mikey: 4,
+    },
+    {
+        // Wave 6
+        Grunt: 30,
+        Hulk: 7,
+        Spheroid: 4,
+        Quark: 4,
+        Brain: 3,
+        Enforcer: 3,
+        Prog: 0,
+        Daddy: 5,
+        Mommy: 5,
+        Mikey: 4,
+    },
+    {
+        // Wave 7
+        Grunt: 30,
+        Hulk: 8,
+        Spheroid: 5,
+        Quark: 5,
+        Brain: 3,
+        Enforcer: 3,
+        Prog: 0,
+        Daddy: 5,
+        Mommy: 5,
+        Mikey: 4,
+    },
+    {
+        // Wave 8
+        Grunt: 30,
+        Hulk: 7,
+        Spheroid: 5,
+        Quark: 5,
+        Brain: 5,
+        Enforcer: 5,
+        Prog: 0,
+        Daddy: 6,
+        Mommy: 6,
+        Mikey: 5,
     }
 ];
 

@@ -5,9 +5,12 @@ class Grunt extends Enemy {
     constructor(game) {
         super(game, 18, 27);
         this.pointsAwarded = 100;
-        this.movementSpeed = 8; // INCREASES ACCORDING TO WAVE ELAPSED TIME (TAKING TOO LONG)
+        this.baseMovementSpeed = 8;
+        this.movementSpeed = this.baseMovementSpeed;
         this.movementTimer = 0;
-        this.movementInterval = 10; // DECREASES ACCORDING TO WAVE ELAPSED TIME
+        this.baseMovementInterval = 10;
+        this.movementInterval = this.baseMovementInterval;
+        this.framesAlive = 0;
         this.hitboxes = {
             head: { width: 10, height: 11, xPosition: 8, yPosition: 0 },
             torso: { width: 20, height: 10, xPosition: 4, yPosition: 12 },
@@ -18,6 +21,14 @@ class Grunt extends Enemy {
     }
 
     update(game) {
+        // Ramp up speed over 10 seconds (assuming ~60 FPS = 600 frames)
+        if (this.framesAlive < 600) {
+            this.framesAlive++;
+            let rampFactor = this.framesAlive / 600;
+            // Ramp interval from 10 down to 5 to double movement frequency
+            this.movementInterval = this.baseMovementInterval - (rampFactor * 5);
+        }
+
         this.move(game);
     }
 
