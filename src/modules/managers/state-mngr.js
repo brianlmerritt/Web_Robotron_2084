@@ -36,6 +36,26 @@ class StateManager {
                     this.player.spritesheetY = 0;
                     this.projectiles.enemies.clear();
                     
+                    // Clear a safe zone in the center
+                    const cx = this.game.ui.canvas.width / 2;
+                    const cy = this.game.ui.canvas.height / 2;
+                    const safeRadius = 250;
+
+                    for (const enemy of this.actors.enemies) {
+                        const dx = (enemy.screenX + enemy.width / 2) - cx;
+                        const dy = (enemy.screenY + enemy.height / 2) - cy;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < safeRadius) {
+                            const angle = dist === 0 ? Math.random() * Math.PI * 2 : Math.atan2(dy, dx);
+                            enemy.screenX = cx + Math.cos(angle) * safeRadius - enemy.width / 2;
+                            enemy.screenY = cy + Math.sin(angle) * safeRadius - enemy.height / 2;
+                            if (typeof enemy.stayWithinCanvas === "function") {
+                                enemy.stayWithinCanvas();
+                            }
+                        }
+                    }
+                    
                     this.game.startTransition();
                 }, 2000);
             } else {
