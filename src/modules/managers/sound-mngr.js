@@ -1,66 +1,68 @@
 export { SoundManager };
-import { SoundEffect } from "../models/sound-effect.js";
 import { soundFxIndex } from "../helpers/indexes.js";
 
-// Plays one sound at a time depending on its priority
-// Priority levels range from 1 (lowest) to 6 (highest)
+// Manages concurrent sound playback using an Audio pool to avoid patchiness.
 class SoundManager {
     constructor() {
-        this.currentSound = new SoundEffect();
-    }
+        this.pools = {};
+        this.lastPlayed = {};
 
-    // A high priority sound (5 or 6) or a sound of current priority
-    shouldPlayNow(priority) {
-        return priority >= this.currentSound.priority || priority > 4;
-    }
-
-    stopCurrentSound(currentSound) {
-        if (currentSound.sound) {
-            currentSound.sound.muted = true;
-            currentSound.sound = null;
+        for (const [key, val] of Object.entries(soundFxIndex)) {
+            const src = Array.isArray(val) ? val[0] : val;
+            this.pools[key] = [];
+            // Create a small pool of 3 audio elements per sound to allow overlapping
+            for (let i = 0; i < 3; i++) {
+                this.pools[key].push(new Audio(src));
+            }
+            this.lastPlayed[key] = 0;
         }
-    }
-
-    createNewSound(soundFile, priority) {
-        const newSound = new Audio(soundFile);
-        this.currentSound.sound = newSound;
-        this.currentSound.priority = priority;
     }
 
     userInteractedWithPage() {
         return navigator.userActivation.hasBeenActive;
     }
 
-    playNewSound(currentSound) {
-        if (this.userInteractedWithPage()) {
-            // Avoids an error
-            currentSound.sound.play();
-        }
-    }
-
-    playExclusively(minimumDurationInSeconds) {
-        if (minimumDurationInSeconds) {
-            this.currentSound.timeout = setTimeout(() => {
-                this.currentSound.timeout = null;
-            }, minimumDurationInSeconds * 1000);
-        }
-    }
-
     playSound(sound) {
-        const { currentSound } = this;
-        const soundFile = soundFxIndex[sound][0];
-        const priority = soundFxIndex[sound][1];
-        const minimumDurationInSeconds = soundFxIndex[sound][2];
-        if (this.shouldPlayNow(priority)) {
-            clearTimeout(currentSound.timeout);
-        }
-        // Ignores any sound of lower priority than the current one
-        else if (currentSound.timeout !== null) {
+        if (!this.userInteractedWithPage()) {
             return;
         }
-        this.stopCurrentSound(currentSound);
-        this.createNewSound(soundFile, priority);
-        this.playNewSound(currentSound);
-        this.playExclusively(minimumDurationInSeconds);
+
+        const now = Date.now();
+        const conf = soundFxIndex[sound];
+        
+        // Default 50ms cooldown for spam prevention (can be very fast, just not simultaneous)
+        let cooldownMs = 50; 
+        
+        // Many sounds in soundFxIndex use their own timing, we can scale it down
+        // so they can overlap slightly but not clip into a single massive wave.
+        if (Array.isArray(conf) && conf[2]) {
+            // We use half the minimum duration as a localized cooldown for the exact same sound
+            cooldownMs = (conf[2] * 1000) * 0.5;
+        }
+
+        if (this.lastPlayed[sound] && (now - this.lastPlayed[sound]) < cooldownMs) {
+            return;
+        }
+
+        this.lastPlayed[sound] = now;
+
+        const pool = this.pools[sound];
+        if (pool) {
+            let played = false;
+            for (const audio of pool) {
+                if (audio.paused || audio.ended) {
+                    audio.currentTime = 0;
+                    audio.play().catch(e => {}); // Catch interact restrictions
+                    played = true;
+                    break;
+                }
+            }
+            
+            // If all elements in the pool are busy, force restart the first one
+            if (!played) {
+                pool[0].currentTime = 0;
+                pool[0].play().catch(e => {});
+            }
+        }
     }
 }
