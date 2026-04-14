@@ -38,6 +38,13 @@ class Game {
         this.stateMngr = new StateManager(this);
         this.debuggerr = new Debugger(this);
         this.currentWave = 1;
+        this.isWaitingToStart = true;
+        
+        // Show start screen strictly on load
+        setTimeout(() => {
+            const startScreen = document.getElementById("start-screen");
+            if (startScreen) startScreen.style.display = "flex";
+        }, 100);
     }
 
     update() {
@@ -46,6 +53,11 @@ class Game {
         
         // Input should always be checked so the user can press Start
         this.inputMngr.update(player);
+
+        if (this.isWaitingToStart) {
+            this.uiMngr.update(score, ui, actorMngr, this);
+            return;
+        }
         
         if (!stateMngr.isDestroyed(player)) {
             actorMngr.update();
@@ -82,6 +94,9 @@ class Game {
         this.actorMngr.actors.player.lives++;
         this.score.resetRescueBonus();
         this.debuggerr.resetWave(true); 
+        this.isWaitingToStart = true;
+        const startScreen = document.getElementById("start-screen");
+        if (startScreen) startScreen.style.display = "flex";
     }
 
     restartGame() {
@@ -91,6 +106,9 @@ class Game {
         this.score.nextExtraLife = 25000;
         this.actorMngr.actors.player.lives = 3;
         this.debuggerr.resetWave(true);
+        this.isWaitingToStart = true;
+        const startScreen = document.getElementById("start-screen");
+        if (startScreen) startScreen.style.display = "flex";
     }
 
     draw() {

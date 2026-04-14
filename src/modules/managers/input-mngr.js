@@ -47,13 +47,7 @@ class InputManager {
 
         // Start Button (usually button 9 on Xbox controller)
         const isStartPressed = gp.buttons[9] && gp.buttons[9].pressed;
-        if (isStartPressed && !this.wasStartPressed) {
-            if (player.lives <= 0) {
-                player.game.restartGame();
-            } else {
-                player.game.debuggerr.processDebugKeys("r");
-            }
-        }
+        this.handleStartAction(player, isStartPressed);
         this.wasStartPressed = isStartPressed;
 
         // Select / Back Button (usually button 8 on Xbox controller)
@@ -62,6 +56,31 @@ class InputManager {
             player.game.restartGame();
         }
         this.wasSelectPressed = isSelectPressed;
+    }
+
+    handleStartAction(player, isStartPressed) {
+        // Also allow Enter key or Start Gamepad Button
+        const isEnterPressed = this.isKeyPressed("enter");
+        
+        if ((isStartPressed && !this.wasStartPressed) || (isEnterPressed && !this.wasEnterPressed)) {
+            const prompt = document.getElementById("start-prompt");
+
+            if (player.game.isWaitingToStart && player.lives > 0) {
+                player.game.isWaitingToStart = false;
+                const startScreen = document.getElementById("start-screen");
+                if (startScreen) startScreen.style.display = "none";
+                if (prompt) prompt.innerText = "PRESS START OR ENTER TO PLAY";
+                return;
+            }
+
+            if (player.lives <= 0) {
+                if (prompt) prompt.innerText = "PRESS START OR ENTER TO PLAY";
+                player.game.restartGame();
+            } else {
+                player.game.debuggerr.processDebugKeys("r");
+            }
+        }
+        this.wasEnterPressed = isEnterPressed;
     }
 
     isKeyPressed(key) {

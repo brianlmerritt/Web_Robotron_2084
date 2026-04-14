@@ -35,6 +35,20 @@ class StateManager {
                     this.player.spritesheetX = 0;
                     this.player.spritesheetY = 0;
                     this.projectiles.enemies.clear();
+                    
+                    this.game.isWaitingToStart = true;
+                    const startScreen = document.getElementById("start-screen");
+                    if (startScreen) startScreen.style.display = "flex";
+                }, 2000);
+            } else {
+                // Game Over logic: show the Start Screen but allow them to restart
+                setTimeout(() => {
+                    const startScreen = document.getElementById("start-screen");
+                    if (startScreen) {
+                        const prompt = document.getElementById("start-prompt");
+                        if (prompt) prompt.innerText = "GAME OVER - PRESS START TO PLAY AGAIN";
+                        startScreen.style.display = "flex";
+                    }
                 }, 2000);
             }
         }

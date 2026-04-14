@@ -81,3 +81,79 @@ canvas {
     background-color: black;
     border: 7px solid rgb(255, 110, 0);
 }
+
+/* Start Screen */
+#start-screen {
+    position: absolute;
+    top: 34px; 
+    left: 7px;
+    width: 876px;
+    height: 720px;
+    background-color: rgba(0, 0, 0, 0.93);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+#start-screen h1 {
+    font-size: 32px;
+    color: red;
+    margin-bottom: 25px;
+    text-align: center;
+}
+#start-screen h2 {
+    font-size: 20px;
+    color: yellow;
+    margin: 5px 0;
+}
+#start-screen h3 {
+    font-size: 16px;
+    color: lightblue;
+    margin: 0 0 35px 0;
+}
+.start-columns {
+    display: flex;
+    width: 70%;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+.start-col {
+    width: 45%;
+    display: flex;
+    flex-direction: column;
+}
+.start-col h4 {
+    text-align: left;
+    margin-bottom: 30px;
+    color: orange;
+    font-size: 22px;
+    padding-left: 20px;
+}
+.actor-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 35px;
+}
+.actor-row span {
+    font-size: 18px;
+    padding-left: 10px;
+}
+.sprite-crop {
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+    transform: scale(2);
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.blink-text {
+    animation: blinker 1s linear infinite;
+    color: white;
+    font-size: 24px;
+    margin-top: 10px;
+}
+@keyframes blinker {
+    50% { opacity: 0; }
+}
