@@ -44,11 +44,13 @@ window.addEventListener("load", () => {
         // Game loop
         while (timeSinceLastUpdate >= targetFrameDuration) {
             game.update();
-            game.draw();
             timeSinceLastUpdate -= targetFrameDuration;
             game.globalTimer++;
             frameCountThisSecond++;
         }
+        
+        // Draw once per frame, regardless of how many logical updates occurred
+        game.draw();
 
         // Updates framerate indicator
         if (currentTime - lastFPSUpdateTime >= 1000) {
