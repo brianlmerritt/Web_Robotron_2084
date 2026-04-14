@@ -9,7 +9,7 @@ class InputManager {
 
     update(player) {
         this.updateGamepadInput(player);
-        if (player.currentState === "alive" && !player.game.isPaused) {
+        if (player.currentState === "alive" && !player.game.isPaused && !player.game.isTransitioning) {
             this.processMovementKeys(player);
             this.processShootingKeys(player);
         }

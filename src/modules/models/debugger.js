@@ -73,7 +73,7 @@ class Debugger {
         this.game.spawnActors();
         
         // Clear a safe zone in the center upon starting the wave
-        const safeRadius = 200;
+        const safeRadius = 250;
         for (const enemy of enemies) {
             const dx = (enemy.screenX + enemy.width / 2) - (player.screenX + player.width / 2);
             const dy = (enemy.screenY + enemy.height / 2) - (player.screenY + player.height / 2);

@@ -32,11 +32,12 @@ class ActorManager {
     }
 
     isAwayFromOthers(actor, otherActors, minDistance) {
-        otherActors.forEach((otherActor) => {
+        if (!minDistance) return true;
+        for (const otherActor of otherActors) {
             if (getDistanceBetween(actor, otherActor) < minDistance) {
                 return false;
             }
-        });
+        }
         return true;
     }
 
@@ -64,13 +65,14 @@ class ActorManager {
 
         const maxAttempts = 100;
         let attempt = 0;
+        
+        const centerX = this.game.ui.canvas.width / 2;
+        const centerY = this.game.ui.canvas.height / 2;
 
         while (attempt < maxAttempts) {
             this.placeActorInRandomPosition(newActor);
             
             // Ensure a safe zone around the very center of the screen
-            const centerX = this.game.ui.canvas.width / 2;
-            const centerY = this.game.ui.canvas.height / 2;
             const distFromCenter = Math.hypot(newActor.screenX - centerX, newActor.screenY - centerY);
             
             if (distFromCenter < 200) { // 200-pixel safe zone around the middle
@@ -98,7 +100,18 @@ class ActorManager {
         }
         
         // If we fail to find a perfect spot, just let it spawn wherever it ended up 
-        // to avoid infinite loops
+        // to avoid infinite loops, BUT force it outside the center safe zone
+        const finalDistFromCenter = Math.hypot(newActor.screenX - centerX, newActor.screenY - centerY);
+        if (finalDistFromCenter < 200) {
+            const angle = Math.atan2(newActor.screenY - centerY, newActor.screenX - centerX);
+            newActor.screenX = centerX + Math.cos(angle) * 200;
+            newActor.screenY = centerY + Math.sin(angle) * 200;
+            
+            // Re-apply boundaries in case it gets pushed out of bounds
+            if (typeof newActor.stayWithinCanvas === "function") {
+                newActor.stayWithinCanvas();
+            }
+        }
         return true;
     }
 
