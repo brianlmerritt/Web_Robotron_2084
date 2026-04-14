@@ -1,7 +1,7 @@
 export { spritesIndex, spritesheetYIndex, soundFxIndex };
 
-const imgPath = "../../src/assets/sprites/";
-const soundFxPath = "../../src/assets/sound_fx/";
+const imgPath = "./assets/sprites/";
+const soundFxPath = "./assets/sound_fx/";
 
 const spritesIndex = {
     life: imgPath + "ui/life.png",

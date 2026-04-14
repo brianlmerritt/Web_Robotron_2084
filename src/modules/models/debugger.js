@@ -63,14 +63,32 @@ class Debugger {
         projectiles.player.clear();
         projectiles.enemies.clear();
         player.currentState = "alive";
-        player.screenX = this.game.ui.canvas.width / 2 - player.originalWidth;
-        player.screenY = this.game.ui.canvas.height / 2 - player.originalHeight;
+        player.screenX = this.game.ui.canvas.width / 2 - player.originalWidth / 2;
+        player.screenY = this.game.ui.canvas.height / 2 - player.originalHeight / 2;
         player.spritesheetX = 0;
         player.spritesheetY = 0;
         
         // Let game tick for a moment safely
         this.game.globalTimer = 0;
         this.game.spawnActors();
+        
+        // Clear a safe zone in the center upon starting the wave
+        const safeRadius = 200;
+        for (const enemy of enemies) {
+            const dx = (enemy.screenX + enemy.width / 2) - (player.screenX + player.width / 2);
+            const dy = (enemy.screenY + enemy.height / 2) - (player.screenY + player.height / 2);
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < safeRadius) {
+                // Push enemy away
+                const angle = Math.atan2(dy, dx);
+                enemy.screenX = player.screenX + Math.cos(angle) * safeRadius - enemy.width / 2;
+                enemy.screenY = player.screenY + Math.sin(angle) * safeRadius - enemy.height / 2;
+                
+                // Ensure enemy stays on screen bounds
+                enemy.screenX = Math.max(0, Math.min(enemy.screenX, this.game.ui.canvas.width - enemy.width));
+                enemy.screenY = Math.max(0, Math.min(enemy.screenY, this.game.ui.canvas.height - enemy.height));
+            }
+        }
     }
 
     // Not 100% accurate due to rect() limitations

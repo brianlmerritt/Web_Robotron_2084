@@ -62,25 +62,44 @@ class ActorManager {
             minEnemySpawnDistance,
         } = newActor;
 
-        this.placeActorInRandomPosition(newActor);
-        const playerDistance = getDistanceBetween(newActor, player);
-        const isAwayFromPlayer = playerDistance >= minPlayerSpawnDistance;
-        const isAwayFromHumans = this.isAwayFromOthers(
-            newActor,
-            humans,
-            minHumanSpawnDistance
-        );
-        const isAwayFromEnemies = this.isAwayFromOthers(
-            newActor,
-            enemies,
-            minEnemySpawnDistance
-        );
+        const maxAttempts = 100;
+        let attempt = 0;
 
-        if (isAwayFromPlayer && isAwayFromEnemies && isAwayFromHumans) {
-            return true;
-        } else {
-            return this.isSafeToSpawn(newActor);
+        while (attempt < maxAttempts) {
+            this.placeActorInRandomPosition(newActor);
+            
+            // Ensure a safe zone around the very center of the screen
+            const centerX = this.game.ui.canvas.width / 2;
+            const centerY = this.game.ui.canvas.height / 2;
+            const distFromCenter = Math.hypot(newActor.screenX - centerX, newActor.screenY - centerY);
+            
+            if (distFromCenter < 200) { // 200-pixel safe zone around the middle
+                attempt++;
+                continue;
+            }
+
+            const playerDistance = getDistanceBetween(newActor, player);
+            const isAwayFromPlayer = playerDistance >= minPlayerSpawnDistance;
+            const isAwayFromHumans = this.isAwayFromOthers(
+                newActor,
+                humans,
+                minHumanSpawnDistance
+            );
+            const isAwayFromEnemies = this.isAwayFromOthers(
+                newActor,
+                enemies,
+                minEnemySpawnDistance
+            );
+
+            if (isAwayFromPlayer && isAwayFromEnemies && isAwayFromHumans) {
+                return true;
+            }
+            attempt++;
         }
+        
+        // If we fail to find a perfect spot, just let it spawn wherever it ended up 
+        // to avoid infinite loops
+        return true;
     }
 
     getParentClass(actorType) {
