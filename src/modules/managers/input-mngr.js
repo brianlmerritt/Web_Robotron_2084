@@ -70,6 +70,7 @@ class InputManager {
                 const startScreen = document.getElementById("start-screen");
                 if (startScreen) startScreen.style.display = "none";
                 if (prompt) prompt.innerText = "PRESS START OR ENTER TO PLAY";
+                player.game.startTransition(); // Automatically kick off transition directly from idle screen
                 return;
             }
 

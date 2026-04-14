@@ -36,9 +36,7 @@ class StateManager {
                     this.player.spritesheetY = 0;
                     this.projectiles.enemies.clear();
                     
-                    this.game.isWaitingToStart = true;
-                    const startScreen = document.getElementById("start-screen");
-                    if (startScreen) startScreen.style.display = "flex";
+                    this.game.startTransition();
                 }, 2000);
             } else {
                 // Game Over logic: show the Start Screen but allow them to restart

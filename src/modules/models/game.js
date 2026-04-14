@@ -39,12 +39,22 @@ class Game {
         this.debuggerr = new Debugger(this);
         this.currentWave = 1;
         this.isWaitingToStart = true;
+        this.isTransitioning = false;
+        this.transitionPhase = "in";
+        this.transitionTimer = 0;
         
         // Show start screen strictly on load
         setTimeout(() => {
             const startScreen = document.getElementById("start-screen");
             if (startScreen) startScreen.style.display = "flex";
         }, 100);
+    }
+
+    startTransition() {
+        this.isTransitioning = true;
+        this.transitionPhase = "in";
+        this.transitionTimer = 0;
+        this.soundMngr.playSound("regularWave");
     }
 
     update() {
@@ -56,6 +66,26 @@ class Game {
 
         if (this.isWaitingToStart) {
             this.uiMngr.update(score, ui, actorMngr, this);
+            return;
+        }
+
+        if (this.isTransitioning) {
+            const speed = 7; // Speed of the concentric lines
+            
+            if (this.transitionPhase === "in") {
+                this.transitionTimer += speed;
+                const maxDepth = ui.canvas.width / 2;
+                if (this.transitionTimer >= maxDepth) {
+                    this.transitionPhase = "out";
+                    this.transitionTimer = maxDepth;
+                }
+            } else {
+                this.transitionTimer -= speed;
+                if (this.transitionTimer <= 0) {
+                    this.isTransitioning = false;
+                    this.transitionTimer = 0;
+                }
+            }
             return;
         }
         
@@ -94,9 +124,7 @@ class Game {
         this.actorMngr.actors.player.lives++;
         this.score.resetRescueBonus();
         this.debuggerr.resetWave(true); 
-        this.isWaitingToStart = true;
-        const startScreen = document.getElementById("start-screen");
-        if (startScreen) startScreen.style.display = "flex";
+        this.startTransition();
     }
 
     restartGame() {
@@ -108,7 +136,11 @@ class Game {
         this.debuggerr.resetWave(true);
         this.isWaitingToStart = true;
         const startScreen = document.getElementById("start-screen");
-        if (startScreen) startScreen.style.display = "flex";
+        if (startScreen) {
+            startScreen.style.display = "flex";
+            const prompt = document.getElementById("start-prompt");
+            if (prompt) prompt.innerText = "PRESS START OR ENTER TO PLAY";
+        }
     }
 
     draw() {
@@ -116,6 +148,48 @@ class Game {
         uiMngr.clearPreviousFrameSprites(ui);
         actorMngr.draw(ui.context);
         projectileMngr.draw(this, ui.context);
+
+        if (this.isTransitioning) {
+            this.drawTransition(ui.context, ui.canvas);
+        }
+    }
+
+    drawTransition(ctx, canvas) {
+        const cw = canvas.width;
+        const ch = canvas.height;
+        const cx = cw / 2;
+        const cy = ch / 2;
+        
+        ctx.fillStyle = "black";
+        if (this.transitionPhase === "in") {
+            // Screen fills black fully, lines draw on top
+            ctx.fillRect(0, 0, cw, ch);
+        } else {
+            // Draw a mask with a hole exactly mapping to transition depth to reveal level
+            const holeW = cw - this.transitionTimer * 2;
+            const holeH = ch - this.transitionTimer * (ch / cw) * 2;
+            
+            ctx.beginPath();
+            ctx.rect(0, 0, cw, ch); // Outer clockwise mask
+            if (holeW > 0 && holeH > 0) {
+                // Inner counter-clockwise mask punch out
+                ctx.rect(cx + holeW/2, cy - holeH/2, -holeW, holeH); 
+            }
+            ctx.fill();
+        }
+        
+        // Draw the concentric colored neon rectangles over the black parts
+        const colors = ["#ff00ff", "#00ffff", "#ffff00", "#00ff00", "#ff0000", "#0000ff", "#ff8800"];
+        ctx.lineWidth = 4;
+        
+        for (let d = 0; d <= Math.round(this.transitionTimer); d += 15) {
+            ctx.strokeStyle = colors[Math.floor(d / 15) % colors.length];
+            const rw = cw - d * 2;
+            const rh = ch - d * (ch / cw) * 2;
+            if (rw > 0 && rh > 0) {
+                ctx.strokeRect(cx - rw/2, cy - rh/2, rw, rh);
+            }
+        }
     }
 
     spawnActors() {
