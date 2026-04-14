@@ -13,7 +13,9 @@ class Input {
             "arrowdown",
             "arrowleft",
             "arrowright",
-            "enter"
+            "enter",
+            "p",
+            "escape"
         ];
         this.listenToPlayerControls(game);
     }

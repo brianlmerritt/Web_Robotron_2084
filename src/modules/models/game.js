@@ -39,6 +39,7 @@ class Game {
         this.debuggerr = new Debugger(this);
         this.currentWave = 1;
         this.isWaitingToStart = true;
+        this.isPaused = false;
         this.isTransitioning = false;
         this.transitionPhase = "in";
         this.transitionTimer = 0;
@@ -66,6 +67,11 @@ class Game {
 
         if (this.isWaitingToStart) {
             this.uiMngr.update(score, ui, actorMngr, this);
+            return;
+        }
+
+        if (this.isPaused) {
+            // Do not update game logic or animations while paused
             return;
         }
 
@@ -135,11 +141,25 @@ class Game {
         this.actorMngr.actors.player.lives = 3;
         this.debuggerr.resetWave(true);
         this.isWaitingToStart = true;
+        this.isPaused = false;
+        
         const startScreen = document.getElementById("start-screen");
         if (startScreen) {
             startScreen.style.display = "flex";
             const prompt = document.getElementById("start-prompt");
             if (prompt) prompt.innerText = "PRESS START OR ENTER TO PLAY";
+        }
+        
+        const pauseScreen = document.getElementById("pause-screen");
+        if (pauseScreen) pauseScreen.style.display = "none";
+    }
+
+    togglePause() {
+        if (this.isWaitingToStart) return;
+        this.isPaused = !this.isPaused;
+        const pauseScreen = document.getElementById("pause-screen");
+        if (pauseScreen) {
+            pauseScreen.style.display = this.isPaused ? "flex" : "none";
         }
     }
 
@@ -203,7 +223,9 @@ class Game {
         actorMngr.addActors(waveConfig.Spheroid || 0, Spheroid);
         actorMngr.addActors(waveConfig.Quark || 0, Quark);
         actorMngr.addActors(waveConfig.Grunt || 0, Grunt);
-        // Note: For actual spawn logic, we might need to include logic for Brain, Enforcers, Tanks, etc.
-        // based on configurations if they start scaling in later waves.
+        // Ensure you import Brain, Enforcer and Prog in your imports when making their classes
+        // actorMngr.addActors(waveConfig.Enforcer || 0, Enforcer);
+        // actorMngr.addActors(waveConfig.Brain || 0, Brain);
+        // actorMngr.addActors(waveConfig.Prog || 0, Prog);
     }
 }

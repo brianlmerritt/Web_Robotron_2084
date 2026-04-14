@@ -41,6 +41,10 @@
                             <span>GRUNT (100)</span>
                         </div>
                         <div class="actor-row">
+                            <div class="sprite-crop" style="background-position: 0px 0px; background-image: url('./assets/sprites/actors/enemies/brain.png'); width: 28px; height: 32px;"></div>
+                            <span>BRAIN (500)</span>
+                        </div>
+                        <div class="actor-row">
                             <div class="sprite-crop" style="background-position: 0px -9px; background-image: url('./assets/sprites/actors/enemies/hulk.png'); width: 26px; height: 32px;"></div>
                             <span>HULK (UNKILLABLE)</span>
                         </div>
@@ -49,8 +53,16 @@
                             <span>SPHEROID (1000)</span>
                         </div>
                         <div class="actor-row">
+                            <div class="sprite-crop" style="background-position: 0px 0px; background-image: url('./assets/sprites/actors/enemies/enforcer.png'); width: 28px; height: 32px;"></div>
+                            <span>ENFORCER (150)</span>
+                        </div>
+                        <div class="actor-row">
                             <div class="sprite-crop" style="background-position-x:-32px; background-image: url('./assets/sprites/actors/enemies/quark.png'); width: 32px; height: 32px;"></div>
                             <span>QUARK (1000)</span>
+                        </div>
+                        <div class="actor-row">
+                            <div class="sprite-crop" style="background-position: 0px 0px; background-image: url('./assets/sprites/actors/enemies/tank.png'); width: 28px; height: 32px;"></div>
+                            <span>TANK (200)</span>
                         </div>
                     </div>
             
@@ -68,10 +80,18 @@
                             <div class="sprite-crop" style="background-position: -24px -48px; background-image: url('./assets/sprites/actors/humans/mikey_alt.png'); width: 12px; height: 24px;"></div>
                             <span>MIKEY</span>
                         </div>
+                        <div class="actor-row">
+                            <div class="sprite-crop" style="background-position: 0px 0px; background-image: url('./assets/sprites/actors/enemies/prog.png'); width: 28px; height: 32px;"></div>
+                            <span>PROG (100)</span>
+                        </div>
                     </div>
                 </div>
 
                 <div id="start-prompt" class="blink-text">PRESS START OR ENTER TO PLAY</div>
+            </div>
+            
+            <div id="pause-screen" class="overlay" style="display: none; justify-content: center; align-items: center; flex-direction: column;">
+                <h1 class="blink-text" style="font-size: 4rem; color: #ff00ff; text-shadow: 2px 2px 0px #00ffff, -2px -2px 0px #ffff00;">PAUSED</h1>
             </div>
 
             <div id="bottom-info">

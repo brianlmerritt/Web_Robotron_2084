@@ -9,7 +9,7 @@ class InputManager {
 
     update(player) {
         this.updateGamepadInput(player);
-        if (player.currentState === "alive") {
+        if (player.currentState === "alive" && !player.game.isPaused) {
             this.processMovementKeys(player);
             this.processShootingKeys(player);
         }
@@ -22,50 +22,68 @@ class InputManager {
         // Remove existing virtual joystick keys
         this.input.keysPressed = this.input.keysPressed.filter(key => !key.startsWith("js_"));
         
-        if (!gp) return;
+        let isStartPressed = false;
+        let isSelectPressed = false;
+        let isBPressed = false;
 
-        const getKeysFromAxes = (x, y, bindings) => {
-            const keys = [];
-            // Use a radial deadzone
-            if (Math.hypot(x, y) < 0.25) return keys;
+        if (gp) {
+            const getKeysFromAxes = (x, y, bindings) => {
+                const keys = [];
+                // Use a radial deadzone
+                if (Math.hypot(x, y) < 0.25) return keys;
+                
+                const angle = Math.atan2(y, x);
+                // Divides the circle into 8 equal 45-degree slices
+                // This perfectly balances orthogonal vs diagonal inputs
+                const slice = Math.round(angle / (Math.PI / 4)); // -4 to +4
+                
+                if (slice === 0 || slice === 1 || slice === -1) keys.push(bindings.right);
+                if (slice === 4 || slice === -4 || slice === 3 || slice === -3) keys.push(bindings.left);
+                if (slice === 2 || slice === 1 || slice === 3) keys.push(bindings.down);
+                if (slice === -2 || slice === -1 || slice === -3) keys.push(bindings.up);
+                
+                return keys;
+            };
+
+            // Left Joystick (Movement: W, S, A, D)
+            const leftKeys = getKeysFromAxes(gp.axes[0], gp.axes[1], {
+                up: "js_w", down: "js_s", left: "js_a", right: "js_d"
+            });
+            this.input.keysPressed.push(...leftKeys);
+
+            // Right Joystick (Shooting: Arrows)
+            // Some controllers use axes 2 & 3 for right stick
+            const rightKeys = getKeysFromAxes(gp.axes[2], gp.axes[3], {
+                up: "js_arrowup", down: "js_arrowdown", left: "js_arrowleft", right: "js_arrowright"
+            });
+            this.input.keysPressed.push(...rightKeys);
+
+            // Start Button (usually button 9 on Xbox controller) and 'A' Button (usually button 0)
+            isStartPressed = (gp.buttons[9] && gp.buttons[9].pressed) || (gp.buttons[0] && gp.buttons[0].pressed);
             
-            const angle = Math.atan2(y, x);
-            // Divides the circle into 8 equal 45-degree slices
-            // This perfectly balances orthogonal vs diagonal inputs
-            const slice = Math.round(angle / (Math.PI / 4)); // -4 to +4
-            
-            if (slice === 0 || slice === 1 || slice === -1) keys.push(bindings.right);
-            if (slice === 4 || slice === -4 || slice === 3 || slice === -3) keys.push(bindings.left);
-            if (slice === 2 || slice === 1 || slice === 3) keys.push(bindings.down);
-            if (slice === -2 || slice === -1 || slice === -3) keys.push(bindings.up);
-            
-            return keys;
-        };
+            // Select / Back Button (usually button 8 on Xbox controller)
+            isSelectPressed = gp.buttons[8] && gp.buttons[8].pressed;
 
-        // Left Joystick (Movement: W, S, A, D)
-        const leftKeys = getKeysFromAxes(gp.axes[0], gp.axes[1], {
-            up: "js_w", down: "js_s", left: "js_a", right: "js_d"
-        });
-        this.input.keysPressed.push(...leftKeys);
+            // B Button for Pause (usually button 1)
+            isBPressed = gp.buttons[1] && gp.buttons[1].pressed;
+        }
 
-        // Right Joystick (Shooting: Arrows)
-        // Some controllers use axes 2 & 3 for right stick
-        const rightKeys = getKeysFromAxes(gp.axes[2], gp.axes[3], {
-            up: "js_arrowup", down: "js_arrowdown", left: "js_arrowleft", right: "js_arrowright"
-        });
-        this.input.keysPressed.push(...rightKeys);
-
-        // Start Button (usually button 9 on Xbox controller)
-        const isStartPressed = gp.buttons[9] && gp.buttons[9].pressed;
         this.handleStartAction(player, isStartPressed);
         this.wasStartPressed = isStartPressed;
 
-        // Select / Back Button (usually button 8 on Xbox controller)
-        const isSelectPressed = gp.buttons[8] && gp.buttons[8].pressed;
         if (isSelectPressed && !this.wasSelectPressed) {
             player.game.restartGame();
         }
         this.wasSelectPressed = isSelectPressed;
+
+        const isPPressed = this.isKeyPressed("p") || this.isKeyPressed("escape");
+        
+        if ((isBPressed && !this.wasBPressed) || (isPPressed && !this.wasPPressed)) {
+            player.game.togglePause();
+        }
+        
+        this.wasBPressed = isBPressed;
+        this.wasPPressed = isPPressed;
     }
 
     handleStartAction(player, isStartPressed) {
