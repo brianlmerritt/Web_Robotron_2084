@@ -8,7 +8,8 @@ Download the source code and open "index.html" with the Live Server extension in
 ## Gameplay
 Shoot the enemies and rescue the humans to rack as many points as you can!\
 At every 25,000 points you get an extra life (indicated next to the score)\
-Clear the screen of vulnerable enemies to advance to the next wave
+Clear the screen of vulnerable enemies to advance to the next wave\
+The game features multiple waves with escalating difficulty
 
 ## Enemies
 Destroying enemies grants you points but getting too close will cost you a life!
@@ -47,6 +48,9 @@ Losing a life or advancing to the next wave resets the next rescue to the initia
 Obstacles are scattered around the screen and will destroy the player on contact
 
 ## Controls
+Keyboard and game controllers are supported. Controllers are detected automatically via the browser's Gamepad API.
+
+### Keyboard
 | Keyboard Key | Description |
 | :----------: | :---------: |
 | W | Move up |
@@ -58,8 +62,14 @@ Obstacles are scattered around the screen and will destroy the player on contact
 | Arrow Down | Shoot down |
 | Arrow Right | Shoot right |
 
-## Known Issues
-Unexpected audio and visual behavior occurs when the browser console is open
+### Game Controller
+| Input | Description |
+| :---: | :---------: |
+| Left Stick | Move |
+| Right Stick | Shoot |
+| Start / A | Start game |
+| B | Pause |
+| Select | Restart game |
 
 ## Debugging Shortcuts
 | Keyboard Key | Description |
