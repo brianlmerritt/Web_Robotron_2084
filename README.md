@@ -1,4 +1,4 @@
-# Web Robotron: 2084 (Work In Progress)
+# Web Robotron: 2084
 Robotron: 2084 is a classic arcade game released in 1982 by Williams Electronics, Inc.\
 This repository aims to faithfully recreate the game with online high score leaderboards
 
