@@ -4,8 +4,8 @@ import { Actor } from "../models/actor.js";
 class Player extends Actor {
     constructor(game) {
         super(game, 14, 24);
-        this.screenX = game.ui.canvas.width / 2 - this.originalWidth / 2;
-        this.screenY = game.ui.canvas.height / 2 - this.originalHeight / 2;
+        this.screenX = game.ui.canvas.width / 2 - this.width / 2;
+        this.screenY = game.ui.canvas.height / 2 - this.height / 2;
         this.lives = 3; // Updated in collisionMngr.checkPlayerCollision
         this.movementSpeed = 3.8;
         this.animationDelay = 2;
@@ -63,6 +63,11 @@ class Player extends Actor {
             },
         };
         game.hitboxMngr.setAllHitboxes(this);
+    }
+
+    centerOnCanvas(canvas) {
+        this.screenX = canvas.width / 2 - this.width / 2;
+        this.screenY = canvas.height / 2 - this.height / 2;
     }
 
     update() {

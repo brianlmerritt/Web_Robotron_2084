@@ -63,8 +63,7 @@ class Debugger {
         projectiles.player.clear();
         projectiles.enemies.clear();
         player.currentState = "alive";
-        player.screenX = this.game.ui.canvas.width / 2 - player.originalWidth / 2;
-        player.screenY = this.game.ui.canvas.height / 2 - player.originalHeight / 2;
+        player.centerOnCanvas(this.game.ui.canvas);
         player.spritesheetX = 0;
         player.spritesheetY = 0;
         
@@ -73,20 +72,21 @@ class Debugger {
         this.game.spawnActors();
         
         // Clear a safe zone in the center upon starting the wave
+        const cx = player.screenX + player.width / 2;
+        const cy = player.screenY + player.height / 2;
         const safeRadius = 250;
         for (const enemy of enemies) {
-            const dx = (enemy.screenX + enemy.width / 2) - (player.screenX + player.width / 2);
-            const dy = (enemy.screenY + enemy.height / 2) - (player.screenY + player.height / 2);
+            const dx = (enemy.screenX + enemy.width / 2) - cx;
+            const dy = (enemy.screenY + enemy.height / 2) - cy;
             const dist = Math.sqrt(dx*dx + dy*dy);
             if (dist < safeRadius) {
-                // Push enemy away
-                const angle = Math.atan2(dy, dx);
-                enemy.screenX = player.screenX + Math.cos(angle) * safeRadius - enemy.width / 2;
-                enemy.screenY = player.screenY + Math.sin(angle) * safeRadius - enemy.height / 2;
+                const angle = dist === 0 ? Math.random() * Math.PI * 2 : Math.atan2(dy, dx);
+                enemy.screenX = cx + Math.cos(angle) * safeRadius - enemy.width / 2;
+                enemy.screenY = cy + Math.sin(angle) * safeRadius - enemy.height / 2;
                 
-                // Ensure enemy stays on screen bounds
-                enemy.screenX = Math.max(0, Math.min(enemy.screenX, this.game.ui.canvas.width - enemy.width));
-                enemy.screenY = Math.max(0, Math.min(enemy.screenY, this.game.ui.canvas.height - enemy.height));
+                if (typeof enemy.stayWithinCanvas === "function") {
+                    enemy.stayWithinCanvas();
+                }
             }
         }
     }

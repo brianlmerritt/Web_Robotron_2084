@@ -30,8 +30,7 @@ class StateManager {
             if (this.player.lives > 0) {
                 setTimeout(() => {
                     this.player.currentState = "alive";
-                    this.player.screenX = this.game.ui.canvas.width / 2 - this.player.originalWidth / 2;
-                    this.player.screenY = this.game.ui.canvas.height / 2 - this.player.originalHeight / 2;
+                    this.player.centerOnCanvas(this.game.ui.canvas);
                     this.player.spritesheetX = 0;
                     this.player.spritesheetY = 0;
                     this.projectiles.enemies.clear();
