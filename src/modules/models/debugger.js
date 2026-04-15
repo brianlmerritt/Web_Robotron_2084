@@ -57,9 +57,10 @@ class Debugger {
         }
         
         const { projectiles } = this.game.projectileMngr;
-        const { enemies, humans, player } = this.game.actorMngr.actors;
+        const { enemies, humans, obstacles, player } = this.game.actorMngr.actors;
         enemies.clear();
         humans.clear();
+        obstacles.clear();
         projectiles.player.clear();
         projectiles.enemies.clear();
         player.currentState = "alive";

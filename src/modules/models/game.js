@@ -19,6 +19,7 @@ import { Daddy } from "../actors/humans/daddy.js";
 import { Mikey } from "../actors/humans/mikey.js";
 import { Spheroid } from "../actors/enemies/spheroid.js";
 import { Quark } from "../actors/enemies/quark.js";
+import { Electrode } from "../actors/obstacles/electrode.js";
 import { getWaveConfig } from "../helpers/waves.js";
 
 // Updates and draws all game elements. Instantiated in main.js
@@ -223,6 +224,7 @@ class Game {
         actorMngr.addActors(waveConfig.Spheroid || 0, Spheroid);
         actorMngr.addActors(waveConfig.Quark || 0, Quark);
         actorMngr.addActors(waveConfig.Grunt || 0, Grunt);
+        actorMngr.addActors(waveConfig.Electrode || 0, Electrode);
         // Ensure you import Brain, Enforcer and Prog in your imports when making their classes
         // actorMngr.addActors(waveConfig.Enforcer || 0, Enforcer);
         // actorMngr.addActors(waveConfig.Brain || 0, Brain);

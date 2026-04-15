@@ -8,6 +8,7 @@ export const waves = [
         Brain: 0,
         Enforcer: 0,
         Prog: 0,
+        Electrode: 5,
         Daddy: 2,
         Mommy: 2,
         Mikey: 2,
@@ -21,6 +22,7 @@ export const waves = [
         Brain: 0,
         Enforcer: 0,
         Prog: 0,
+        Electrode: 8,
         Daddy: 3,
         Mommy: 3,
         Mikey: 2,
@@ -34,6 +36,7 @@ export const waves = [
         Brain: 0,
         Enforcer: 0,
         Prog: 0,
+        Electrode: 10,
         Daddy: 3,
         Mommy: 3,
         Mikey: 3,
@@ -47,6 +50,7 @@ export const waves = [
         Brain: 1,
         Enforcer: 1,
         Prog: 0,
+        Electrode: 12,
         Daddy: 4,
         Mommy: 4,
         Mikey: 3,
@@ -60,6 +64,7 @@ export const waves = [
         Brain: 2,
         Enforcer: 2,
         Prog: 0,
+        Electrode: 15,
         Daddy: 5,
         Mommy: 5,
         Mikey: 4,
@@ -73,6 +78,7 @@ export const waves = [
         Brain: 3,
         Enforcer: 3,
         Prog: 0,
+        Electrode: 18,
         Daddy: 5,
         Mommy: 5,
         Mikey: 4,
@@ -86,6 +92,7 @@ export const waves = [
         Brain: 3,
         Enforcer: 3,
         Prog: 0,
+        Electrode: 20,
         Daddy: 5,
         Mommy: 5,
         Mikey: 4,
@@ -99,6 +106,7 @@ export const waves = [
         Brain: 5,
         Enforcer: 5,
         Prog: 0,
+        Electrode: 22,
         Daddy: 6,
         Mommy: 6,
         Mikey: 5,
@@ -119,6 +127,7 @@ export function getWaveConfig(waveNumber) {
         baseWave.Quark += Math.floor(extraDifficulty / 3);
         baseWave.Brain += Math.floor(extraDifficulty / 3);
         baseWave.Enforcer += Math.floor(extraDifficulty / 2);
+        baseWave.Electrode += Math.floor(extraDifficulty * 2);
     }
     
     return baseWave;

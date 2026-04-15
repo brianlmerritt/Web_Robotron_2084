@@ -5,22 +5,25 @@ class CollisionManager {
     update(game) {
         this.debuggerr = game.debuggerr;
         const { actorMngr, projectileMngr, hitboxMngr } = game;
-        const { player, enemies, humans } = actorMngr.actors;
+        const { player, enemies, humans, obstacles } = actorMngr.actors;
         this.handleAllCollisions(
             player,
             enemies,
             humans,
+            obstacles,
             projectileMngr,
             hitboxMngr
         );
     }
 
-    handleAllCollisions(player, enemies, humans, projectileMngr, hitboxMngr) {
+    handleAllCollisions(player, enemies, humans, obstacles, projectileMngr, hitboxMngr) {
         this.handlePlayerEnemyCollision(player, enemies, hitboxMngr);
+        this.handlePlayerObstacleCollision(player, obstacles, hitboxMngr);
         this.handleHumanCollisions(player, enemies, humans, hitboxMngr);
         this.handleProjectileCollisions(
             projectileMngr.projectiles,
             enemies,
+            obstacles,
             player,
             hitboxMngr
         );
@@ -91,6 +94,17 @@ class CollisionManager {
         if (!this.debuggerr.playerInvincibility) {
             for (const enemy of enemies) {
                 if (this.checkSingleCollision(player, enemy, hitboxMngr)) {
+                    player.updateState("destroyed");
+                    break;
+                }
+            }
+        }
+    }
+
+    handlePlayerObstacleCollision(player, obstacles, hitboxMngr) {
+        if (!this.debuggerr.playerInvincibility) {
+            for (const obstacle of obstacles) {
+                if (this.checkSingleCollision(player, obstacle, hitboxMngr)) {
                     player.updateState("destroyed");
                     break;
                 }
@@ -169,11 +183,37 @@ class CollisionManager {
         }
     }
 
-    // Handles collision of all projectiles against enemies, other projectiles and the player
-    handleProjectileCollisions(projectiles, enemies, player, hitboxMngr) {
+    handlePlayerProjectileObstacleCollisions(
+        playerProjectiles,
+        obstacles,
+        hitboxMngr
+    ) {
+        for (const playerProjectile of playerProjectiles) {
+            for (const obstacle of obstacles) {
+                if (
+                    this.checkSingleCollision(
+                        playerProjectile,
+                        obstacle,
+                        hitboxMngr
+                    )
+                ) {
+                    playerProjectile.updateState("destroyed");
+                    break;
+                }
+            }
+        }
+    }
+
+    // Handles collision of all projectiles against enemies, obstacles, other projectiles and the player
+    handleProjectileCollisions(projectiles, enemies, obstacles, player, hitboxMngr) {
         this.handlePlayerProjectileEnemyCollisions(
             projectiles.player,
             enemies,
+            hitboxMngr
+        );
+        this.handlePlayerProjectileObstacleCollisions(
+            projectiles.player,
+            obstacles,
             hitboxMngr
         );
         this.handleProjectileProjectileCollisions(

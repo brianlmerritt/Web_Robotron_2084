@@ -12,20 +12,23 @@ class ActorManager {
             player: new Player(game),
             enemies: new Set(),
             humans: new Set(),
+            obstacles: new Set(),
         };
     }
 
     update() {
-        const { player, enemies, humans } = this.actors;
+        const { player, enemies, humans, obstacles } = this.actors;
         if (this.game.debuggerr.shouldUpdateActors) {
             this.updateActors(enemies);
             this.updateActors(humans);
+            this.updateActors(obstacles);
         }
         player.update();
     }
 
     draw(context) {
-        const { player, enemies, humans } = this.actors;
+        const { player, enemies, humans, obstacles } = this.actors;
+        this.drawActors(obstacles, context);
         this.drawActors(enemies, context);
         this.drawActors(humans, context);
         player.draw(context);
@@ -56,7 +59,7 @@ class ActorManager {
 
     // Checks if the newActor is at a sufficient distance from other actors before spawning
     isSafeToSpawn(newActor) {
-        const { player, enemies, humans } = this.actors;
+        const { player, enemies, humans, obstacles } = this.actors;
         const {
             minPlayerSpawnDistance,
             minHumanSpawnDistance,
@@ -92,8 +95,13 @@ class ActorManager {
                 enemies,
                 minEnemySpawnDistance
             );
+            const isAwayFromObstacles = this.isAwayFromOthers(
+                newActor,
+                obstacles,
+                minEnemySpawnDistance
+            );
 
-            if (isAwayFromPlayer && isAwayFromEnemies && isAwayFromHumans) {
+            if (isAwayFromPlayer && isAwayFromEnemies && isAwayFromHumans && isAwayFromObstacles) {
                 return true;
             }
             attempt++;
@@ -130,7 +138,7 @@ class ActorManager {
                 this.actors.enemies.add(newActor);
                 break;
             case "Obstacle":
-                this.actors.obtacles.add(newActor);
+                this.actors.obstacles.add(newActor);
                 break;
         }
     }
